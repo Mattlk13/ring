@@ -39,16 +39,16 @@ To resolve this, include the following dependency in your dev profile:
 To include one of the above libraries, for example `ring-core`, add
 the following to your `:dependencies`:
 
-    [ring/ring-core "1.7.1"]
+    [ring/ring-core "1.9.3"]
 
 To include all of them:
 
-    [ring "1.7.1"]
+    [ring "1.9.3"]
 
 ## Documentation
 
 * [Wiki](https://github.com/ring-clojure/ring/wiki)
-* [API docs](http://ring-clojure.github.com/ring)
+* [API docs](https://ring-clojure.github.io/ring/)
 
 ## Community
 
@@ -67,6 +67,6 @@ thanks to those communities for their work.
 
 ## License
 
-Copyright © 2009-2018 Mark McGranaghan, James Reeves & contributors.
+Copyright © 2009-2021 Mark McGranaghan, James Reeves & contributors.
 
 Released under the MIT license.

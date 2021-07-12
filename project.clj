@@ -1,14 +1,14 @@
-(defproject ring "1.7.1"
+(defproject ring "1.9.3"
   :description "A Clojure web applications library."
   :url "https://github.com/ring-clojure/ring"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
-  :dependencies [[ring/ring-core "1.7.1"]
-                 [ring/ring-devel "1.7.1"]
-                 [ring/ring-jetty-adapter "1.7.1"]
-                 [ring/ring-servlet "1.7.1"]]
-  :plugins [[lein-sub "0.2.4"]
-            [lein-codox "0.10.3"]]
+  :dependencies [[ring/ring-core "1.9.3"]
+                 [ring/ring-devel "1.9.3"]
+                 [ring/ring-jetty-adapter "1.9.3"]
+                 [ring/ring-servlet "1.9.3"]]
+  :plugins [[lein-sub "0.3.0"]
+            [lein-codox "0.10.7"]]
   :sub ["ring-core"
         "ring-devel"
         "ring-jetty-adapter"
@@ -18,4 +18,7 @@
           :source-paths ["ring-core/src"
                          "ring-devel/src"
                          "ring-jetty-adapter/src"
-                         "ring-servlet/src"]})
+                         "ring-servlet/src"]}
+  :aliases {"test"     ["sub" "test"]
+            "test-all" ["sub" "test-all"]
+            "bench"    ["sub" "-s" "ring-bench" "run"]})

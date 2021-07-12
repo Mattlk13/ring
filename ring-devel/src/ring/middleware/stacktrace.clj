@@ -13,6 +13,7 @@
 
 (defn wrap-stacktrace-log
   "Wrap a handler such that exceptions are logged to *err* and then rethrown.
+
   Accepts the following options:
 
   :color? - if true, apply ANSI colors to stacktrace (default false)"
@@ -40,37 +41,37 @@
 (defn- elem-partial [elem]
   (if (:clojure elem)
     [:tr.clojure
-      [:td.source (h (source-str elem))]
-      [:td.method (h (clojure-method-str elem))]]
+     [:td.source (h (source-str elem))]
+     [:td.method (h (clojure-method-str elem))]]
     [:tr.java
-      [:td.source (h (source-str elem))]
-      [:td.method (h (java-method-str elem))]]))
+     [:td.source (h (source-str elem))]
+     [:td.method (h (java-method-str elem))]]))
 
 (defn- html-exception [ex]
   (let [[ex & causes] (iterate :cause (parse-exception ex))]
     (html5
-      [:head
-        [:title "Ring: Stacktrace"]
-        (style-resource "ring/css/stacktrace.css")]
-      [:body
-        [:div#exception
-          [:h1 (h (.getName ^Class (:class ex)))]
-          [:div.message (h (:message ex))]
+     [:head
+      [:title "Ring: Stacktrace"]
+      (style-resource "ring/css/stacktrace.css")]
+     [:body
+      [:div#exception
+       [:h1 (h (.getName ^Class (:class ex)))]
+       [:div.message (h (:message ex))]
+       [:div.trace
+        [:table
+         [:tbody (map elem-partial (:trace-elems ex))]]]
+       (for [cause causes :while cause]
+         [:div#causes
+          [:h2 "Caused by " [:span.class (h (.getName ^Class (:class cause)))]]
+          [:div.message (h (:message cause))]
           [:div.trace
-            [:table
-              [:tbody (map elem-partial (:trace-elems ex))]]]
-         (for [cause causes :while cause]
-           [:div#causes
-             [:h2 "Caused by " [:span.class (h (.getName ^Class (:class cause)))]]
-             [:div.message (h (:message cause))]
-             [:div.trace
-               [:table
-                 [:tbody (map elem-partial (:trace-elems cause))]]]])]])))
+           [:table
+            [:tbody (map elem-partial (:trace-elems cause))]]]])]])))
 
-(defn- js-ex-response [e]
+(defn- text-ex-response [e]
   (-> (response (with-out-str (pst e)))
       (status 500)
-      (content-type "text/javascript")))
+      (content-type "text/plain")))
 
 (defn- html-ex-response [ex]
   (-> (response (html-exception ex))
@@ -79,12 +80,14 @@
 
 (defn- ex-response
   "Returns a response showing debugging information about the exception.
-  Currently supports delegation to either js or html exception views."
+
+  Renders HTML if that's in the accept header (indicating that the URL was
+  opened in a browser), but defaults to plain text."
   [req ex]
   (let [accept (get-in req [:headers "accept"])]
-    (if (and accept (re-find #"^text/javascript" accept))
-      (js-ex-response ex)
-      (html-ex-response ex))))
+    (if (and accept (re-find #"^text/html" accept))
+      (html-ex-response ex)
+      (text-ex-response ex))))
 
 (defn wrap-stacktrace-web
   "Wrap a handler such that exceptions are caught and a response containing
@@ -96,7 +99,7 @@
        (handler request)
        (catch Throwable ex
          (ex-response request ex))))
-    ([request respond raise]
+    ([request respond _]
      (try
        (handler request respond (fn [ex] (respond (ex-response request ex))))
        (catch Throwable ex
