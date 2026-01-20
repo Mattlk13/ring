@@ -1,5 +1,5 @@
 (ns ring.adapter.jetty
-  "A Ring adapter that uses the Jetty 9 embedded web server.
+  "A Ring adapter that uses the Jetty embedded web server.
 
   Adapters are used to convert Ring handlers into running web servers."
   (:require [clojure.java.io :as io]
